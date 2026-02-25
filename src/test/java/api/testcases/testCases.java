@@ -5,35 +5,35 @@ import api.payload.pojoClass;
 import api.validators.UserValidator;
 import io.restassured.response.Response;
 import java.io.FileNotFoundException;
+
 import org.testng.annotations.Test;
 
 public class testCases {
 
-	@Test(priority = 1)
-	public void testCreateUser() throws FileNotFoundException {
+    private String username = "Shashi";
+    private Response getUserResponse;
 
-	    pojoClass payload = new pojoClass();
-	    payload.setUsername("Shashi");
+    @Test(priority = 1)
+    public void createUser() throws FileNotFoundException {
 
+        pojoClass payload = new pojoClass();
+        payload.setUsername(username);
 
-	    Response response = userEndPoints.createUser(payload);
+        Response response = userEndPoints.createUser(payload);
+        UserValidator.validateCreateUser(response);
+    }
 
-	    UserValidator.validateCreateUser(response);
-	}
-	
-	
-	@Test(priority = 2)
-	public void getDetails() {
+    @Test(priority = 2, dependsOnMethods = "createUser")
+    public void getDetails() {
 
-	    Response response = userEndPoints.getUser("Shashi");
+        getUserResponse = userEndPoints.getUser(username);
 
-	    UserValidator.validateGetUser(response, "Shashi");
-	}
+        UserValidator.validateGetUser(getUserResponse, username);
+    }
 
-	
-	
+    @Test(priority = 3, dependsOnMethods = "getDetails")
+    public void SchemaValidation() {
 
-	}
-
-    
-
+        UserValidator.validateUserSchema(getUserResponse);
+    }
+}

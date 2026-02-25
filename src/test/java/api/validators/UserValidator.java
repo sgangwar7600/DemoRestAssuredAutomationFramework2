@@ -3,6 +3,7 @@ package api.validators;
 import api.utilities.BaseSpec;
 import io.restassured.response.Response;
 import static org.hamcrest.Matchers.*;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 
 
 public class UserValidator {
@@ -20,6 +21,12 @@ public class UserValidator {
 	       .spec(BaseSpec.getResponseSpec())
 	       .body("username", equalTo(expectedUsername))
 	       .body("id", notNullValue());
+	}
+	
+	public static void validateUserSchema(Response res) {
+
+	    res.then()
+	       .body(matchesJsonSchemaInClasspath("schemas/userSchema.json"));
 	}
 
 
